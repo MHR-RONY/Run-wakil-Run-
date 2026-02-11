@@ -1,48 +1,35 @@
-/* ============================================================
-   পালা ওয়াকিল পালা! — Game Constants & Configuration
-   ============================================================ */
 
 const CONFIG = {
-	// Canvas
-	WIDTH: 900,
-	HEIGHT: 450,
+	WIDTH: 1200,
+	HEIGHT: 600,
 
-	// Physics
 	GRAVITY: 0.75,
 	JUMP_FORCE: -15,
 
-	// Speed — starts slow, increases based on score
 	BASE_SPEED: 2.5,
 	MAX_SPEED: 12,
 	SPEED_INCREMENT: 0.15,
-	SPEED_INTERVAL: 500,     // frames between speed increases
-	SCORE_SPEED_FACTOR: 0.0003, // extra speed per score point
+	SPEED_INTERVAL: 500,
+	SCORE_SPEED_FACTOR: 0.0003,
 
-	// Anger
-	ANGER_HIT_AMOUNT: 16,    // anger gained per obstacle hit
-	ANGER_DODGE_RELIEF: 3,   // anger reduced per obstacle dodged
+	ANGER_HIT_AMOUNT: 16,
+	ANGER_DODGE_RELIEF: 3,
 	ANGER_MAX: 100,
 
-	// Obstacle spawning
 	MIN_OBSTACLE_INTERVAL: 50,
 	BASE_OBSTACLE_INTERVAL: 110,
 
-	// Player (bigger)
 	PLAYER_X: 160,
 	PLAYER_W: 55,
 	PLAYER_H: 90,
 	PLAYER_DUCK_H: 45,
 
-	// Wife
 	WIFE_START_X: -80,
 
-	// Collision
 	COLLISION_SHRINK: 8,
 
-	// Particles
 	PARTICLE_COUNT: 4,
 
-	// Colors
 	COLORS: {
 		sky: ['#0d1b2a', '#1b2838', '#2d4059'],
 		ground: ['#5d4037', '#4e342e', '#3e2723'],
@@ -56,10 +43,8 @@ const CONFIG = {
 	}
 };
 
-// Ground Y is derived from canvas dimensions
 CONFIG.GROUND_Y = CONFIG.HEIGHT - 65;
 
-// Obstacle type definitions (scaled up for bigger characters)
 const OBSTACLE_TYPES = [
 	{ type: 'rock', w: 45, h: 45, yOffset: 0, needJump: true, needDuck: false },
 	{ type: 'barrel', w: 50, h: 55, yOffset: 0, needJump: true, needDuck: false },
@@ -69,7 +54,6 @@ const OBSTACLE_TYPES = [
 	{ type: 'lowBranch', w: 65, h: 30, yOffset: -80, needJump: false, needDuck: true },
 ];
 
-// Funny Bengali hit texts for Wakil (floating text on collision)
 const BANGLA_HIT_TEXTS = [
 	'ওয়াকিল ভাগ! পালা! 🏃',
 	'গেলাম রে বাবা! 💀',
@@ -91,7 +75,6 @@ const BANGLA_HIT_TEXTS = [
 	'বাঁচাও! সলমা পাগল হয়ে গেছে! 🤪',
 ];
 
-// Funny Bengali texts Salma yells while chasing
 const SALMA_CHASE_TEXTS = [
 	'আজকে তোর খবর আছে! 😤',
 	'খালি মেয়ে দেখলেই মেসেজ দিস! 📱',
@@ -111,7 +94,6 @@ const SALMA_CHASE_TEXTS = [
 	'তোর বন্ধু রাজু বলে দিয়েছে সব! 🐀',
 ];
 
-// Game-over messages (Bengali)
 const GAMEOVER_MESSAGES = [
 	'সলমা ধরে ফেলেছে! বেলন ইনকামিং! 😱',
 	'ওয়াকিল ধরা পড়ল! কান ধর! 🧎',

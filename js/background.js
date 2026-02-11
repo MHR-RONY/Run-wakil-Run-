@@ -1,6 +1,3 @@
-/* ============================================================
-   RUN BHAI RUN! — Background (parallax sky, ground, etc.)
-   ============================================================ */
 
 class Background {
 	constructor() {
@@ -8,7 +5,7 @@ class Background {
 		this.bgOffset2 = 0;
 		this.bgOffset3 = 0;
 
-		// Pre-generate stars
+
 		this.stars = [];
 		for (let i = 0; i < 60; i++) {
 			this.stars.push({
@@ -19,7 +16,7 @@ class Background {
 			});
 		}
 
-		// Pre-generate clouds
+
 		this.clouds = [];
 		for (let i = 0; i < 5; i++) {
 			this.clouds.push({
@@ -43,7 +40,6 @@ class Background {
 		const GY = CONFIG.GROUND_Y;
 		const C = CONFIG.COLORS;
 
-		// --- Sky gradient ---
 		const skyGrad = ctx.createLinearGradient(0, 0, 0, GY);
 		skyGrad.addColorStop(0, C.sky[0]);
 		skyGrad.addColorStop(0.5, C.sky[1]);
@@ -51,7 +47,6 @@ class Background {
 		ctx.fillStyle = skyGrad;
 		ctx.fillRect(0, 0, W, H);
 
-		// --- Stars ---
 		this.stars.forEach(s => {
 			const alpha = 0.4 + Math.sin(frameCount * 0.03 + s.twinkle) * 0.3;
 			ctx.fillStyle = `rgba(255,255,255,${alpha})`;
@@ -60,7 +55,6 @@ class Background {
 			ctx.fill();
 		});
 
-		// --- Moon ---
 		ctx.fillStyle = C.moonLight;
 		ctx.beginPath();
 		ctx.arc(W - 100, 60, 30, 0, Math.PI * 2);
@@ -70,7 +64,6 @@ class Background {
 		ctx.arc(W - 90, 55, 25, 0, Math.PI * 2);
 		ctx.fill();
 
-		// --- Clouds ---
 		this.clouds.forEach(c => {
 			c.x -= c.speed;
 			if (c.x + c.w < 0) c.x = W + 20;
@@ -83,13 +76,11 @@ class Background {
 			ctx.fill();
 		});
 
-		// --- Far buildings (parallax layer 1) ---
 		ctx.fillStyle = C.farBuilding;
 		for (let i = 0; i < 12; i++) {
 			const bx = (i * 100 - this.bgOffset1 % 100 + W) % (W + 100) - 50;
 			const bh = 40 + (i * 37) % 60;
 			ctx.fillRect(bx, GY - bh, 50, bh);
-			// Windows
 			ctx.fillStyle = C.windowGlow;
 			for (let wy = GY - bh + 8; wy < GY - 10; wy += 14) {
 				for (let wx = bx + 8; wx < bx + 42; wx += 14) {
@@ -99,7 +90,7 @@ class Background {
 			ctx.fillStyle = C.farBuilding;
 		}
 
-		// --- Near buildings (parallax layer 2) ---
+
 		ctx.fillStyle = C.nearBuilding;
 		for (let i = 0; i < 8; i++) {
 			const bx = (i * 140 - this.bgOffset2 % 140 + W) % (W + 140) - 70;
@@ -107,7 +98,6 @@ class Background {
 			ctx.fillRect(bx, GY - bh, 70, bh);
 		}
 
-		// --- Ground ---
 		const groundGrad = ctx.createLinearGradient(0, GY, 0, H);
 		groundGrad.addColorStop(0, C.ground[0]);
 		groundGrad.addColorStop(0.3, C.ground[1]);
@@ -115,7 +105,6 @@ class Background {
 		ctx.fillStyle = groundGrad;
 		ctx.fillRect(0, GY, W, H - GY);
 
-		// Ground line
 		ctx.strokeStyle = C.groundLine;
 		ctx.lineWidth = 2;
 		ctx.beginPath();
@@ -123,7 +112,6 @@ class Background {
 		ctx.lineTo(W, GY);
 		ctx.stroke();
 
-		// Ground dashes
 		ctx.strokeStyle = C.groundDash;
 		ctx.lineWidth = 1;
 		for (let i = 0; i < 20; i++) {

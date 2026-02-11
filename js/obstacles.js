@@ -1,6 +1,3 @@
-/* ============================================================
-   RUN BHAI RUN! — Obstacle Manager
-   ============================================================ */
 
 class ObstacleManager {
 	constructor() {
@@ -25,27 +22,23 @@ class ObstacleManager {
 			this.spawnTimer = 0;
 		}
 
-		// Move and check each obstacle
 		const results = { hits: [], dodged: [] };
 
 		for (let i = this.obstacles.length - 1; i >= 0; i--) {
 			const obs = this.obstacles[i];
 			obs.x -= speed;
 
-			// Collision detection
 			const playerBox = player.getHitbox();
 			if (!obs.passed && this._checkCollision(playerBox, obs)) {
 				obs.passed = true;
 				results.hits.push(obs);
 			}
 
-			// Successfully dodged
 			if (!obs.passed && obs.x + obs.w < player.x) {
 				obs.passed = true;
 				results.dodged.push(obs);
 			}
 
-			// Remove off-screen
 			if (obs.x + obs.w < -20) {
 				this.obstacles.splice(i, 1);
 			}

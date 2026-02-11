@@ -1,13 +1,9 @@
-/* ============================================================
-   পালা ওয়াকিল পালা! — Renderer (all draw routines)
-   ============================================================ */
-
+// Renderer (all draw routines)
 class Renderer {
 	constructor(ctx) {
 		this.ctx = ctx;
-		this.hitTexts = [];   // floating Bengali hit-text bubbles
+		this.hitTexts = [];
 
-		// Load Wakil head image
 		this.wakilHead = new Image();
 		this.wakilHead.src = 'public/wakil.png';
 		this.wakilHeadLoaded = false;
@@ -16,10 +12,8 @@ class Renderer {
 		this._polyfillRoundRect();
 	}
 
-	// ----------------------------------------------------------
-	//  Floating Bengali hit-text system
-	// ----------------------------------------------------------
 
+	//  Floating Bengali hit-text system
 	spawnHitText(x, y) {
 		const text = BANGLA_HIT_TEXTS[Math.floor(Math.random() * BANGLA_HIT_TEXTS.length)];
 		this.hitTexts.push({
@@ -53,7 +47,6 @@ class Renderer {
 			t.y += t.vy;
 			t.vy *= 0.98;
 			t.life--;
-			// Pop-in scale
 			if (t.scale < 1) t.scale = Math.min(1, t.scale + 0.12);
 
 			const alpha = Math.min(1, t.life / 40);
@@ -67,7 +60,6 @@ class Renderer {
 			ctx.textAlign = 'center';
 
 			if (t.isSalma) {
-				// Speech-bubble style for Salma
 				const tw = ctx.measureText(t.text).width + 14;
 				ctx.fillStyle = 'rgba(255,255,255,0.92)';
 				ctx.beginPath();
@@ -78,7 +70,6 @@ class Renderer {
 				ctx.beginPath();
 				ctx.roundRect(-tw / 2, -14, tw, 22, 8);
 				ctx.stroke();
-				// Tail
 				ctx.fillStyle = 'rgba(255,255,255,0.92)';
 				ctx.beginPath();
 				ctx.moveTo(-3, 8); ctx.lineTo(3, 8); ctx.lineTo(0, 14);
@@ -86,7 +77,6 @@ class Renderer {
 				ctx.fillStyle = '#d32f2f';
 				ctx.fillText(t.text, 0, 1);
 			} else {
-				// Outline text for Wakil
 				ctx.strokeStyle = '#000';
 				ctx.lineWidth = 4;
 				ctx.strokeText(t.text, 0, 0);
@@ -99,9 +89,7 @@ class Renderer {
 		}
 	}
 
-	// ----------------------------------------------------------
-	//  Character drawing
-	// ----------------------------------------------------------
+
 
 	drawPlayer(player, frameCount, wifeAnger) {
 		this._drawHusband(player, frameCount, wifeAnger);
@@ -111,13 +99,9 @@ class Renderer {
 		this._drawWifeCharacter(wife, frameCount);
 	}
 
-	// ----------------------------------------------------------
-	//  HUSBAND — cream kurta, beard, big cartoon scared eyes
-	// ----------------------------------------------------------
-
 	_drawHusband(p, fc, anger) {
 		const ctx = this.ctx;
-		const cx = p.x + p.w / 2;  // center x
+		const cx = p.x + p.w / 2;
 		const isDuck = p.isDucking;
 		const isHit = p.hitTimer > 0;
 
@@ -126,18 +110,16 @@ class Renderer {
 
 		const groundY = p.y;
 		const headR = 18;
-		const bodyTop = isDuck ? groundY - 40 : groundY - 65;
-		const headCY = isDuck ? bodyTop - 6 : bodyTop - 14;
+		const bodyTop = isDuck ? groundY - 25 : groundY - 65;
+		const headCY = isDuck ? groundY - 30 : bodyTop - 14;
 		const legSwing = Math.sin(p.runFrame * Math.PI / 2) * 16;
 		const armSwing = Math.sin(p.runFrame * Math.PI / 2) * 18;
 
-		// Shadow
 		ctx.fillStyle = 'rgba(0,0,0,0.2)';
 		ctx.beginPath();
 		ctx.ellipse(cx, groundY + 3, 26, 6, 0, 0, Math.PI * 2);
 		ctx.fill();
 
-		// --- Legs ---
 		ctx.strokeStyle = '#c4a882';
 		ctx.lineWidth = 7;
 		ctx.lineCap = 'round';
@@ -145,11 +127,10 @@ class Renderer {
 			ctx.beginPath(); ctx.moveTo(cx - 4, groundY - 28); ctx.lineTo(cx - 4 + legSwing, groundY); ctx.stroke();
 			ctx.beginPath(); ctx.moveTo(cx + 4, groundY - 28); ctx.lineTo(cx + 4 - legSwing, groundY); ctx.stroke();
 		} else {
-			ctx.beginPath(); ctx.moveTo(cx - 6, groundY - 12); ctx.lineTo(cx - 16, groundY); ctx.stroke();
-			ctx.beginPath(); ctx.moveTo(cx + 6, groundY - 12); ctx.lineTo(cx + 16, groundY); ctx.stroke();
+			ctx.beginPath(); ctx.moveTo(cx - 8, groundY - 8); ctx.lineTo(cx - 20, groundY); ctx.stroke();
+			ctx.beginPath(); ctx.moveTo(cx + 8, groundY - 8); ctx.lineTo(cx + 20, groundY); ctx.stroke();
 		}
 
-		// Shoes (brown)
 		if (!isDuck) {
 			ctx.fillStyle = '#5d4037';
 			ctx.beginPath();
@@ -160,14 +141,12 @@ class Renderer {
 			ctx.fill();
 		}
 
-		// --- Kurta body (cream/beige) ---
-		const bw = isDuck ? 42 : 34;
-		const bh = isDuck ? 28 : 42;
+		const bw = isDuck ? 50 : 34;
+		const bh = isDuck ? 20 : 42;
 		ctx.fillStyle = p.shirtColor;
 		ctx.beginPath();
 		ctx.roundRect(cx - bw / 2, bodyTop, bw, bh, 6);
 		ctx.fill();
-		// Kurta collar line
 		ctx.strokeStyle = '#c4b08a';
 		ctx.lineWidth = 1.5;
 		ctx.beginPath();
@@ -176,29 +155,35 @@ class Renderer {
 		ctx.lineTo(cx + 5, bodyTop);
 		ctx.stroke();
 
-		// --- Arms ---
 		ctx.strokeStyle = p.shirtColor;
 		ctx.lineWidth = 7;
-		// Right arm
-		ctx.beginPath();
-		ctx.moveTo(cx + bw / 2 - 2, bodyTop + 8);
-		ctx.lineTo(cx + bw / 2 + armSwing * 0.6, bodyTop + 24);
-		ctx.stroke();
-		// Left arm
-		ctx.beginPath();
-		ctx.moveTo(cx - bw / 2 + 2, bodyTop + 8);
-		ctx.lineTo(cx - bw / 2 - armSwing * 0.6, bodyTop + 24);
-		ctx.stroke();
-		// Hands (skin color)
-		ctx.fillStyle = '#deb887';
-		ctx.beginPath();
-		ctx.arc(cx + bw / 2 + armSwing * 0.6, bodyTop + 26, 4, 0, Math.PI * 2);
-		ctx.fill();
-		ctx.beginPath();
-		ctx.arc(cx - bw / 2 - armSwing * 0.6, bodyTop + 26, 4, 0, Math.PI * 2);
-		ctx.fill();
+		if (!isDuck) {
+			ctx.beginPath();
+			ctx.moveTo(cx + bw / 2 - 2, bodyTop + 8);
+			ctx.lineTo(cx + bw / 2 + armSwing * 0.6, bodyTop + 24);
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(cx - bw / 2 + 2, bodyTop + 8);
+			ctx.lineTo(cx - bw / 2 - armSwing * 0.6, bodyTop + 24);
+			ctx.stroke();
+			ctx.fillStyle = '#deb887';
+			ctx.beginPath();
+			ctx.arc(cx + bw / 2 + armSwing * 0.6, bodyTop + 26, 4, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(cx - bw / 2 - armSwing * 0.6, bodyTop + 26, 4, 0, Math.PI * 2);
+			ctx.fill();
+		} else {
+			ctx.beginPath();
+			ctx.moveTo(cx + bw / 2 - 2, bodyTop + 5);
+			ctx.lineTo(cx + bw / 2 + 20, bodyTop + 10);
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(cx - bw / 2 + 2, bodyTop + 5);
+			ctx.lineTo(cx - bw / 2 - 20, bodyTop + 10);
+			ctx.stroke();
+		}
 
-		// --- HEAD with bobbing motion ---
 		const headBob = Math.sin(fc * 0.25) * 2.5;
 		const headTilt = Math.sin(fc * 0.18) * 0.08;
 
@@ -207,20 +192,17 @@ class Renderer {
 		ctx.rotate(headTilt);
 
 		if (this.wakilHeadLoaded) {
-			// Draw the PNG image as the head
-			const imgSize = isDuck ? 40 : 52;
+			const imgSize = isDuck ? 35 : 52;
 			ctx.drawImage(this.wakilHead, -imgSize / 2, -imgSize / 2 - 4, imgSize, imgSize);
 		} else {
-			// Fallback circle if image hasn't loaded yet
 			ctx.fillStyle = '#c68c53';
 			ctx.beginPath();
 			ctx.arc(0, 0, headR, 0, Math.PI * 2);
 			ctx.fill();
 		}
 
-		ctx.restore(); // end head transform
+		ctx.restore();
 
-		// Name label "ওয়াকিল" (above head)
 		ctx.save();
 		ctx.font = 'bold 12px Arial';
 		ctx.textAlign = 'center';
@@ -235,9 +217,6 @@ class Renderer {
 		ctx.restore();
 	}
 
-	// ----------------------------------------------------------
-	//  WIFE — white/cream saree, bindi, angry eyes, rolling pin
-	// ----------------------------------------------------------
 
 	_drawWifeCharacter(w, fc) {
 		const ctx = this.ctx;
@@ -251,33 +230,27 @@ class Renderer {
 
 		ctx.save();
 
-		// Shadow
 		ctx.fillStyle = 'rgba(0,0,0,0.2)';
 		ctx.beginPath();
 		ctx.ellipse(cx, groundY + 3, 24, 6, 0, 0, Math.PI * 2);
 		ctx.fill();
 
-		// --- Legs (under saree) ---
 		ctx.strokeStyle = '#deb887';
 		ctx.lineWidth = 6;
 		ctx.lineCap = 'round';
 		ctx.beginPath(); ctx.moveTo(cx - 4, groundY - 20); ctx.lineTo(cx - 4 + legSwing * 0.5, groundY); ctx.stroke();
 		ctx.beginPath(); ctx.moveTo(cx + 4, groundY - 20); ctx.lineTo(cx + 4 - legSwing * 0.5, groundY); ctx.stroke();
 
-		// Feet
 		ctx.fillStyle = '#deb887';
 		ctx.beginPath(); ctx.ellipse(cx - 4 + legSwing * 0.5, groundY, 6, 3, 0, 0, Math.PI * 2); ctx.fill();
 		ctx.beginPath(); ctx.ellipse(cx + 4 - legSwing * 0.5, groundY, 6, 3, 0, 0, Math.PI * 2); ctx.fill();
 
-		// --- Saree body (white/cream with gold border) ---
 		ctx.fillStyle = w.sareeColor;
 		ctx.beginPath();
 		ctx.roundRect(cx - 18, bodyTop, 36, 48, 5);
 		ctx.fill();
-		// Gold border at bottom
 		ctx.fillStyle = '#c9a84c';
 		ctx.fillRect(cx - 18, bodyTop + 42, 36, 6);
-		// Saree drape (pallu)
 		ctx.fillStyle = 'rgba(245,240,225,0.7)';
 		ctx.beginPath();
 		ctx.moveTo(cx + 16, bodyTop + 5);
@@ -285,7 +258,6 @@ class Renderer {
 		ctx.lineTo(cx + 16, bodyTop + 40);
 		ctx.closePath();
 		ctx.fill();
-		// Gold stripe on pallu
 		ctx.strokeStyle = '#c9a84c';
 		ctx.lineWidth = 2;
 		ctx.beginPath();
@@ -293,7 +265,6 @@ class Renderer {
 		ctx.quadraticCurveTo(cx + 27, bodyTop + 20, cx + 21, bodyTop + 40);
 		ctx.stroke();
 
-		// --- Left arm (swinging) ---
 		ctx.strokeStyle = '#deb887';
 		ctx.lineWidth = 6;
 		ctx.beginPath();
@@ -301,7 +272,6 @@ class Renderer {
 		ctx.lineTo(cx - 16 - armSwing * 0.5, bodyTop + 28);
 		ctx.stroke();
 
-		// --- Right arm (holding belan/rolling pin raised) ---
 		ctx.strokeStyle = '#deb887';
 		ctx.lineWidth = 6;
 		ctx.beginPath();
@@ -309,16 +279,13 @@ class Renderer {
 		ctx.lineTo(cx + 26, bodyTop - 10);
 		ctx.stroke();
 
-		// Rolling pin (belan)
 		ctx.save();
 		ctx.translate(cx + 28, bodyTop - 16);
 		ctx.rotate(Math.sin(w.belanAngle) * 0.6 - 0.3);
-		// Handle
 		ctx.fillStyle = '#8d6e63';
 		ctx.beginPath();
 		ctx.roundRect(-4, -18, 8, 36, 3);
 		ctx.fill();
-		// Grip ends
 		ctx.fillStyle = '#6d4c41';
 		ctx.beginPath();
 		ctx.roundRect(-5, -20, 10, 6, 2);
@@ -328,47 +295,38 @@ class Renderer {
 		ctx.fill();
 		ctx.restore();
 
-		// Hand
 		ctx.fillStyle = '#deb887';
 		ctx.beginPath();
 		ctx.arc(cx + 26, bodyTop - 10, 4, 0, Math.PI * 2);
 		ctx.fill();
 
-		// --- Head ---
 		ctx.fillStyle = '#deb887';
 		ctx.beginPath();
 		ctx.arc(cx, headCY, headR, 0, Math.PI * 2);
 		ctx.fill();
 
-		// Hair (dark, with bun)
 		ctx.fillStyle = '#1a1a1a';
 		ctx.beginPath();
 		ctx.arc(cx, headCY - 2, headR + 1, Math.PI, 0);
 		ctx.fill();
-		// Hair sides
 		ctx.fillRect(cx - headR - 1, headCY - 4, 5, 12);
 		ctx.fillRect(cx + headR - 4, headCY - 4, 5, 12);
-		// Hair bun
 		ctx.beginPath();
 		ctx.arc(cx - 10, headCY - 10, 8, 0, Math.PI * 2);
 		ctx.fill();
-		// Bun decoration
 		ctx.fillStyle = '#c9a84c';
 		ctx.beginPath();
 		ctx.arc(cx - 10, headCY - 12, 3, 0, Math.PI * 2);
 		ctx.fill();
 
-		// --- Bindi (red dot) ---
 		ctx.fillStyle = '#d32f2f';
 		ctx.beginPath();
 		ctx.arc(cx, headCY - 8, 3, 0, Math.PI * 2);
 		ctx.fill();
 
-		// --- Angry eyes ---
 		const eyeSpread = 7;
 		const eyeY = headCY + 1;
 
-		// Eye whites
 		ctx.fillStyle = '#fff';
 		ctx.beginPath();
 		ctx.ellipse(cx - eyeSpread, eyeY, 6, 6, 0, 0, Math.PI * 2);
@@ -381,23 +339,19 @@ class Renderer {
 		ctx.beginPath(); ctx.ellipse(cx - eyeSpread, eyeY, 6, 6, 0, 0, Math.PI * 2); ctx.stroke();
 		ctx.beginPath(); ctx.ellipse(cx + eyeSpread, eyeY, 6, 6, 0, 0, Math.PI * 2); ctx.stroke();
 
-		// Angry pupils
 		ctx.fillStyle = '#000';
 		ctx.beginPath(); ctx.arc(cx - eyeSpread + 1, eyeY + 1, 3, 0, Math.PI * 2); ctx.fill();
 		ctx.beginPath(); ctx.arc(cx + eyeSpread + 1, eyeY + 1, 3, 0, Math.PI * 2); ctx.fill();
 
-		// Angry eyebrows (V-shape)
 		ctx.strokeStyle = '#1a1a1a';
 		ctx.lineWidth = 3;
 		ctx.beginPath(); ctx.moveTo(cx - eyeSpread - 6, eyeY - 7); ctx.lineTo(cx - eyeSpread + 3, eyeY - 10); ctx.stroke();
 		ctx.beginPath(); ctx.moveTo(cx + eyeSpread + 6, eyeY - 7); ctx.lineTo(cx + eyeSpread - 3, eyeY - 10); ctx.stroke();
 
-		// --- Angry mouth (teeth gritting) ---
 		ctx.fillStyle = '#8b0000';
 		ctx.beginPath();
 		ctx.roundRect(cx - 6, headCY + 9, 12, 6, 2);
 		ctx.fill();
-		// Teeth
 		ctx.fillStyle = '#fff';
 		ctx.fillRect(cx - 5, headCY + 9, 10, 3);
 		ctx.strokeStyle = '#999';
@@ -406,7 +360,6 @@ class Renderer {
 			ctx.beginPath(); ctx.moveTo(t, headCY + 9); ctx.lineTo(t, headCY + 12); ctx.stroke();
 		}
 
-		// Nose
 		ctx.fillStyle = '#c4956a';
 		ctx.beginPath();
 		ctx.moveTo(cx, headCY + 2);
@@ -414,7 +367,6 @@ class Renderer {
 		ctx.lineTo(cx - 3, headCY + 6);
 		ctx.fill();
 
-		// Anger veins
 		ctx.strokeStyle = '#f44336';
 		ctx.lineWidth = 1.5;
 		const veinX = cx + headR + 2;
@@ -426,7 +378,6 @@ class Renderer {
 		ctx.moveTo(veinX, veinY); ctx.lineTo(veinX - 2, veinY + 5);
 		ctx.stroke();
 
-		// Name label "সলমা"
 		ctx.font = 'bold 11px Arial';
 		ctx.textAlign = 'center';
 		ctx.fillStyle = '#ffcdd2';
@@ -438,9 +389,6 @@ class Renderer {
 		ctx.restore();
 	}
 
-	// ----------------------------------------------------------
-	//  Obstacle drawing
-	// ----------------------------------------------------------
 
 	drawObstacles(obstacles, frameCount) {
 		obstacles.forEach(obs => this._drawObstacle(obs, frameCount));
@@ -487,37 +435,93 @@ class Renderer {
 
 			case 'bird': {
 				const birdY = obs.y + Math.sin(frameCount * 0.1) * 5;
-				ctx.fillStyle = '#7eb3d4';
+				const centerX = obs.x + obs.w / 2;
+				const centerY = birdY - obs.h / 2;
+
+				// Duck body
+				ctx.fillStyle = '#f5f5f5';
 				ctx.beginPath();
-				ctx.ellipse(obs.x + obs.w / 2, birdY - obs.h / 2, obs.w / 3, obs.h / 3, 0, 0, Math.PI * 2);
+				ctx.ellipse(centerX - 3, centerY + 3, obs.w / 2.5, obs.h / 2.8, 0, 0, Math.PI * 2);
 				ctx.fill();
-				const wingY = Math.sin(frameCount * 0.2) * 8;
+				ctx.strokeStyle = '#ddd';
+				ctx.lineWidth = 1;
+				ctx.stroke();
+
+				// Duck head
+				ctx.fillStyle = '#8d7a6d';
 				ctx.beginPath();
-				ctx.moveTo(obs.x + obs.w / 2 - 5, birdY - obs.h / 2);
-				ctx.lineTo(obs.x, birdY - obs.h / 2 - 15 + wingY);
-				ctx.lineTo(obs.x + obs.w / 2 - 15, birdY - obs.h / 2);
+				ctx.arc(centerX + 8, centerY - 5, obs.h / 3.5, 0, Math.PI * 2);
 				ctx.fill();
-				ctx.beginPath();
-				ctx.moveTo(obs.x + obs.w / 2 + 5, birdY - obs.h / 2);
-				ctx.lineTo(obs.x + obs.w, birdY - obs.h / 2 - 15 + wingY);
-				ctx.lineTo(obs.x + obs.w / 2 + 15, birdY - obs.h / 2);
-				ctx.fill();
-				// Beak
+
+				// Duck bill (flat and wide like a real duck)
 				ctx.fillStyle = '#ffa726';
 				ctx.beginPath();
-				ctx.moveTo(obs.x + obs.w / 2 + 10, birdY - obs.h / 2 - 2);
-				ctx.lineTo(obs.x + obs.w / 2 + 18, birdY - obs.h / 2);
-				ctx.lineTo(obs.x + obs.w / 2 + 10, birdY - obs.h / 2 + 2);
+				ctx.ellipse(centerX + 18, centerY - 5, 10, 4, 0, 0, Math.PI * 2);
 				ctx.fill();
-				// Eye
-				ctx.fillStyle = '#fff';
-				ctx.beginPath(); ctx.arc(obs.x + obs.w / 2 + 6, birdY - obs.h / 2 - 3, 3, 0, Math.PI * 2); ctx.fill();
+				// Bill outline
+				ctx.strokeStyle = '#ff8a50';
+				ctx.lineWidth = 1;
+				ctx.beginPath();
+				ctx.moveTo(centerX + 13, centerY - 5);
+				ctx.lineTo(centerX + 28, centerY - 5);
+				ctx.stroke();
+
+				// Nostril holes
+				ctx.fillStyle = '#e68900';
+				ctx.beginPath();
+				ctx.arc(centerX + 22, centerY - 6, 1, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.beginPath();
+				ctx.arc(centerX + 25, centerY - 6, 1, 0, Math.PI * 2);
+				ctx.fill();
+
+				// Duck eye
 				ctx.fillStyle = '#000';
-				ctx.beginPath(); ctx.arc(obs.x + obs.w / 2 + 7, birdY - obs.h / 2 - 3, 1.5, 0, Math.PI * 2); ctx.fill();
-				// Warning
+				ctx.beginPath();
+				ctx.arc(centerX + 11, centerY - 8, 2.5, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.fillStyle = '#fff';
+				ctx.beginPath();
+				ctx.arc(centerX + 12, centerY - 9, 1, 0, Math.PI * 2);
+				ctx.fill();
+
+				// Wings (animated flapping)
+				const wingY = Math.sin(frameCount * 0.2) * 10;
+				ctx.fillStyle = '#e0e0e0';
+				// Left wing
+				ctx.beginPath();
+				ctx.moveTo(centerX - 8, centerY + 2);
+				ctx.quadraticCurveTo(centerX - 18, centerY - 5 + wingY, centerX - 15, centerY + 8);
+				ctx.lineTo(centerX - 8, centerY + 6);
+				ctx.closePath();
+				ctx.fill();
+				ctx.strokeStyle = '#ccc';
+				ctx.lineWidth = 1;
+				ctx.stroke();
+
+				// Tail feathers
+				ctx.fillStyle = '#f5f5f5';
+				ctx.beginPath();
+				ctx.moveTo(centerX - 15, centerY + 5);
+				ctx.lineTo(centerX - 22, centerY + 3);
+				ctx.lineTo(centerX - 20, centerY + 8);
+				ctx.lineTo(centerX - 17, centerY + 7);
+				ctx.closePath();
+				ctx.fill();
+
+				// Duck feet
+				ctx.fillStyle = '#ffa726';
+				ctx.beginPath();
+				ctx.moveTo(centerX - 5, centerY + 12);
+				ctx.lineTo(centerX - 10, centerY + 16);
+				ctx.lineTo(centerX - 8, centerY + 17);
+				ctx.lineTo(centerX - 4, centerY + 13);
+				ctx.closePath();
+				ctx.fill();
+
 				ctx.fillStyle = '#ffeb3b';
 				ctx.font = 'bold 11px Arial';
-				ctx.fillText('DUCK!', obs.x + 2, birdY - obs.h / 2 - 20);
+				ctx.fillText('DUCK!', obs.x + 2, centerY - 22);
 				break;
 			}
 
@@ -537,10 +541,8 @@ class Renderer {
 				break;
 
 			case 'sign': {
-				// Pole
 				ctx.fillStyle = '#795548';
 				ctx.fillRect(obs.x + obs.w / 2 - 3, obs.y - obs.h, 6, obs.h);
-				// Sign board
 				ctx.fillStyle = '#f44336';
 				const signY = obs.y - obs.h;
 				const signW = obs.w + 10;
@@ -548,13 +550,11 @@ class Renderer {
 				ctx.beginPath();
 				ctx.roundRect(signX, signY, signW, 24, 4);
 				ctx.fill();
-				// White border
 				ctx.strokeStyle = '#fff';
 				ctx.lineWidth = 1.5;
 				ctx.beginPath();
 				ctx.roundRect(signX + 3, signY + 3, signW - 6, 18, 2);
 				ctx.stroke();
-				// STOP text centered
 				ctx.fillStyle = '#fff';
 				ctx.font = 'bold 12px Arial';
 				ctx.textAlign = 'center';
@@ -587,9 +587,6 @@ class Renderer {
 		ctx.restore();
 	}
 
-	// ----------------------------------------------------------
-	//  HUD (score, anger bar, speed)
-	// ----------------------------------------------------------
 
 	drawHUD(score, highScore, wifeAnger, speed) {
 		const ctx = this.ctx;
@@ -637,9 +634,6 @@ class Renderer {
 		ctx.fillText(`Best: ${highScore}`, W - 15, 50);
 	}
 
-	// ----------------------------------------------------------
-	//  Menu & Game-Over screens
-	// ----------------------------------------------------------
 
 	drawMenu(frameCount, highScore) {
 		const ctx = this.ctx;
@@ -714,9 +708,6 @@ class Renderer {
 		ctx.globalAlpha = 1;
 	}
 
-	// ----------------------------------------------------------
-	//  Polyfill
-	// ----------------------------------------------------------
 
 	_polyfillRoundRect() {
 		if (!this.ctx.roundRect) {

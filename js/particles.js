@@ -1,6 +1,3 @@
-/* ============================================================
-   RUN BHAI RUN! — Particle System
-   ============================================================ */
 
 class ParticleSystem {
 	constructor() {
@@ -11,7 +8,6 @@ class ParticleSystem {
 		this.particles = [];
 	}
 
-	/** Spawn a burst of particles at (x, y) */
 	spawn(x, y, color) {
 		for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
 			this.particles.push({

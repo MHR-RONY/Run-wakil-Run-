@@ -1,6 +1,3 @@
-/* ============================================================
-   RUN BHAI RUN! — Player (Husband)
-   ============================================================ */
 
 class Player {
 	constructor() {
@@ -14,10 +11,8 @@ class Player {
 		this.runFrame = 0;
 		this.runTimer = 0;
 		this.hitTimer = 0;
-
-		// Appearance (kurta style like the image)
-		this.shirtColor = '#a8d5e2';   // light blue kurta
-		this.pantColor = '#9ec4d1';   // lighter blue kurta bottom
+		this.shirtColor = '#a8d5e2';
+		this.pantColor = '#9ec4d1';
 	}
 
 	reset() {
@@ -29,16 +24,13 @@ class Player {
 	}
 
 	update(input, particleSystem) {
-		// Jump
 		if (input.isJumping() && !this.isJumping && !this.isDucking) {
 			this.vy = CONFIG.JUMP_FORCE;
 			this.isJumping = true;
 		}
 
-		// Duck
 		this.isDucking = input.isDucking() && !this.isJumping;
 
-		// Gravity
 		if (this.isJumping || this.y < CONFIG.GROUND_Y) {
 			this.vy += CONFIG.GRAVITY;
 			this.y += this.vy;
@@ -50,17 +42,14 @@ class Player {
 			}
 		}
 
-		// Run animation
 		this.runTimer++;
 		if (this.runTimer % 6 === 0) {
 			this.runFrame = (this.runFrame + 1) % 4;
 		}
 
-		// Hit flash decay
 		if (this.hitTimer > 0) this.hitTimer--;
 	}
 
-	/** Get the collision bounding box (accounts for ducking) */
 	getHitbox() {
 		return {
 			x: this.x,
